@@ -77,6 +77,27 @@ const WorkCategory: React.FC = () => {
     }
   };
 
+  // Animation Variants for Modal Content
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.3
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
+    }
+  };
+
   return (
     <div className="pt-32 md:pt-40 px-4 md:px-6 min-h-screen relative overflow-hidden bg-black">
       <div 
@@ -196,32 +217,42 @@ const WorkCategory: React.FC = () => {
         )}
       </div>
 
-      {/* REFINED CINEMATIC MODAL */}
+      {/* PREMIUM CINEMATIC MODAL */}
       <AnimatePresence>
         {selectedProject && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-3xl flex items-center justify-center p-4 md:p-12 overflow-y-auto"
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-3xl flex items-center justify-center p-4 md:p-12 overflow-y-auto"
           >
             <motion.div 
-              initial={{ scale: 0.92, opacity: 0, y: 30, filter: 'blur(10px)' }}
+              initial={{ scale: 0.85, opacity: 0, y: 60, filter: 'blur(20px)' }}
               animate={{ scale: 1, opacity: 1, y: 0, filter: 'blur(0px)' }}
-              exit={{ scale: 0.95, opacity: 0, y: 15, transition: { duration: 0.3 } }}
+              exit={{ 
+                scale: 0.9, 
+                opacity: 0, 
+                y: 30, 
+                filter: 'blur(10px)',
+                transition: { duration: 0.4, ease: [0.32, 0, 0.67, 0] } 
+              }}
               transition={{ 
                 type: "spring", 
-                damping: 30, 
-                stiffness: 400, 
-                mass: 0.8,
-                filter: { duration: 0.4 } 
+                damping: 35, 
+                stiffness: 280, 
+                mass: 1.1,
+                filter: { duration: 0.6 }
               }}
-              className={`w-full bg-neutral-950 rounded-[2.5rem] md:rounded-[4rem] border border-white/5 overflow-hidden relative shadow-[0_0_100px_rgba(0,0,0,0.8)] flex flex-col lg:flex-row
+              className={`w-full bg-neutral-950 rounded-[2.5rem] md:rounded-[4rem] border border-white/5 overflow-hidden relative shadow-[0_0_120px_rgba(0,0,0,0.9)] flex flex-col lg:flex-row
                 ${selectedProject.aspectRatio === '9:16' ? 'max-w-4xl max-h-[90vh]' : 'max-w-7xl'}
               `}
             >
               {/* Close Button */}
               <motion.button 
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.5, duration: 0.5 }}
                 whileHover={{ scale: 1.1, rotate: 90 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={handleCloseModal}
@@ -230,7 +261,7 @@ const WorkCategory: React.FC = () => {
                 <X size={20} className="md:size-[28px]" />
               </motion.button>
 
-              {/* Media Section with Lazy Loading Video */}
+              {/* Media Section */}
               <div className={`relative bg-black flex items-center justify-center border-b lg:border-b-0 lg:border-r border-white/5
                 ${selectedProject.aspectRatio === '16:9' ? 'lg:w-2/3 aspect-video' : 'lg:w-1/2 aspect-[9/16] max-h-[60vh] lg:max-h-none'}
               `}>
@@ -247,7 +278,7 @@ const WorkCategory: React.FC = () => {
                       autoPlay 
                       playsInline
                       onCanPlayThrough={() => setVideoIsLoading(false)}
-                      className={`w-full h-full object-contain transition-opacity duration-500 ${videoIsLoading ? 'opacity-0' : 'opacity-100'}`}
+                      className={`w-full h-full object-contain transition-opacity duration-700 ${videoIsLoading ? 'opacity-0' : 'opacity-100'}`}
                     />
                   </>
                 ) : (
@@ -260,24 +291,15 @@ const WorkCategory: React.FC = () => {
               </div>
               
               {/* Content Section */}
-              <div className={`p-8 md:p-16 flex flex-col justify-center
+              <div className={`p-8 md:p-16 flex flex-col justify-center bg-gradient-to-br from-neutral-950 to-neutral-900/50
                 ${selectedProject.aspectRatio === '16:9' ? 'lg:w-1/3' : 'lg:w-1/2'}
               `}>
                 <motion.div
                   initial="hidden"
                   animate="visible"
-                  variants={{
-                    visible: { transition: { staggerChildren: 0.1, delayChildren: 0.2 } },
-                    hidden: {}
-                  }}
+                  variants={containerVariants}
                 >
-                  <motion.header 
-                    variants={{
-                      hidden: { opacity: 0, y: 20 },
-                      visible: { opacity: 1, y: 0 }
-                    }}
-                    className="mb-8 md:mb-12"
-                  >
+                  <motion.header variants={itemVariants} className="mb-8 md:mb-12">
                     <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] block mb-4 md:mb-6" style={{ color: category.color }}>
                       / {category.label}
                     </span>
@@ -288,11 +310,8 @@ const WorkCategory: React.FC = () => {
                   <div className="space-y-8 md:space-y-12 overflow-y-auto custom-scrollbar pr-2 max-h-[40vh] lg:max-h-none">
                     {selectedProject.metrics && (
                       <motion.div 
-                        variants={{
-                          hidden: { opacity: 0, x: -20 },
-                          visible: { opacity: 1, x: 0 }
-                        }}
-                        className="p-6 md:p-8 rounded-2xl md:rounded-[2.5rem] flex items-center gap-4 md:gap-6 border-2 border-white/5 bg-white/5"
+                        variants={itemVariants}
+                        className="p-6 md:p-8 rounded-2xl md:rounded-[2.5rem] flex items-center gap-4 md:gap-6 border-2 border-white/5 bg-white/5 shadow-inner"
                       >
                         <div className="w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: category.color }}>
                           {getMetricIcon()}
@@ -305,24 +324,15 @@ const WorkCategory: React.FC = () => {
                     )}
 
                     <motion.p 
-                      variants={{
-                        hidden: { opacity: 0 },
-                        visible: { opacity: 1 }
-                      }}
-                      className="text-neutral-300 text-sm md:text-lg leading-relaxed"
+                      variants={itemVariants}
+                      className="text-neutral-300 text-sm md:text-lg leading-relaxed font-medium opacity-80"
                     >
                       {selectedProject.description}
                     </motion.p>
 
-                    <motion.div 
-                      variants={{
-                        hidden: { opacity: 0, y: 10 },
-                        visible: { opacity: 1, y: 0 }
-                      }}
-                      className="pt-6 md:pt-8"
-                    >
+                    <motion.div variants={itemVariants} className="pt-6 md:pt-8">
                        <Link to="/contact">
-                         <Button variant="vibrant" className="w-full h-14 md:h-16 rounded-2xl md:rounded-3xl text-xs md:text-sm gap-3" gradientClass={`from-${category.color} to-neutral-800`}>
+                         <Button variant="vibrant" className="w-full h-14 md:h-16 rounded-2xl md:rounded-3xl text-xs md:text-sm gap-3 transition-all hover:scale-[1.02]" gradientClass={`from-${category.color} to-neutral-800`}>
                            <Calendar size={18} /> Book Discovery Call
                          </Button>
                        </Link>

@@ -6,7 +6,7 @@ import {
   AreaChart, Area, ResponsiveContainer, CartesianGrid
 } from 'recharts';
 import { 
-  FolderKanban, Users, Plus, Edit2, Trash2, Activity, LogOut, X, Video, MessageSquare, Mail, CheckCircle, Clock, Monitor, Smartphone, RefreshCw, Loader2, Tag, Wrench
+  FolderKanban, Users, Plus, Edit2, Trash2, Activity, LogOut, X, Video, MessageSquare, Mail, CheckCircle, Clock, Monitor, Smartphone, RefreshCw, Loader2, Tag, Wrench, Filter, ChevronDown
 } from 'lucide-react';
 import Button from '../components/Button';
 import { CATEGORIES } from '../constants';
@@ -25,6 +25,10 @@ const AdminDashboard: React.FC = () => {
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [loading, setLoading] = useState(true);
   const [isDetecting, setIsDetecting] = useState(false);
+
+  // Filter States
+  const [statusFilter, setStatusFilter] = useState<Lead['status'] | 'all'>('all');
+  const [serviceFilter, setServiceFilter] = useState<ServiceType | 'all'>('all');
 
   // Form state uses strings for tags/tools to make editing easy for the user
   const [formData, setFormData] = useState({
@@ -183,6 +187,13 @@ const AdminDashboard: React.FC = () => {
     setIsModalOpen(true);
   };
 
+  // Derived Filtered Leads
+  const filteredLeads = leads.filter(lead => {
+    const matchesStatus = statusFilter === 'all' || lead.status === statusFilter;
+    const matchesService = serviceFilter === 'all' || lead.service === serviceFilter;
+    return matchesStatus && matchesService;
+  });
+
   return (
     <div className="min-h-screen pt-24 md:pt-32 pb-20 bg-[#020202] text-neutral-100">
       <div className="container mx-auto px-4 md:px-6">
@@ -297,29 +308,71 @@ const AdminDashboard: React.FC = () => {
 
               {activeTab === 'leads' && (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  <div className="space-y-4">
-                    <h3 className="text-xl font-black uppercase tracking-tighter mb-6">Inbound Signals</h3>
-                    {leads.map(lead => (
-                      <div 
-                        key={lead.id} 
-                        onClick={() => setSelectedLead(lead)}
-                        className={`glass p-6 rounded-[2rem] border-white/5 cursor-pointer transition-all hover:border-white/20 ${selectedLead?.id === lead.id ? 'border-white/20 bg-white/5 scale-[1.02]' : ''}`}
-                      >
-                        <div className="flex justify-between items-start mb-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-neutral-900 flex items-center justify-center text-neutral-500"><Users size={18}/></div>
-                            <div>
-                              <h4 className="font-bold text-sm">{lead.name}</h4>
-                              <p className="text-[9px] text-neutral-500 font-black uppercase tracking-widest">{lead.service}</p>
-                            </div>
+                  <div className="space-y-6">
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-2">
+                       <h3 className="text-xl font-black uppercase tracking-tighter">Inbound Signals</h3>
+                       
+                       {/* Leads Filtering UI */}
+                       <div className="flex flex-wrap gap-2">
+                          <div className="relative group">
+                             <select 
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value as any)}
+                                className="appearance-none bg-neutral-900 border border-white/5 rounded-xl px-5 py-2.5 pr-10 text-[9px] font-black uppercase tracking-widest outline-none focus:border-white/20 transition-all cursor-pointer"
+                             >
+                                <option value="all">All Status</option>
+                                <option value="new">New</option>
+                                <option value="contacted">Contacted</option>
+                                <option value="closed">Closed</option>
+                             </select>
+                             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 pointer-events-none group-hover:text-white transition-colors" size={12} />
                           </div>
-                          <span className={`text-[8px] font-black uppercase px-2 py-1 rounded-md ${lead.status === 'new' ? 'bg-emerald-500/10 text-emerald-500' : lead.status === 'contacted' ? 'bg-blue-500/10 text-blue-500' : 'bg-neutral-800 text-neutral-400'}`}>
-                            {lead.status}
-                          </span>
+
+                          <div className="relative group">
+                             <select 
+                                value={serviceFilter}
+                                onChange={(e) => setServiceFilter(e.target.value as any)}
+                                className="appearance-none bg-neutral-900 border border-white/5 rounded-xl px-5 py-2.5 pr-10 text-[9px] font-black uppercase tracking-widest outline-none focus:border-white/20 transition-all cursor-pointer"
+                             >
+                                <option value="all">All Disciplines</option>
+                                {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
+                             </select>
+                             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 pointer-events-none group-hover:text-white transition-colors" size={12} />
+                          </div>
+                       </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      {filteredLeads.length > 0 ? (
+                        filteredLeads.map(lead => (
+                          <div 
+                            key={lead.id} 
+                            onClick={() => setSelectedLead(lead)}
+                            className={`glass p-6 rounded-[2rem] border-white/5 cursor-pointer transition-all hover:border-white/20 ${selectedLead?.id === lead.id ? 'border-white/20 bg-white/5 scale-[1.02]' : ''}`}
+                          >
+                            <div className="flex justify-between items-start mb-4">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-neutral-900 flex items-center justify-center text-neutral-500"><Users size={18}/></div>
+                                <div>
+                                  <h4 className="font-bold text-sm">{lead.name}</h4>
+                                  <p className="text-[9px] text-neutral-500 font-black uppercase tracking-widest">{lead.service}</p>
+                                </div>
+                              </div>
+                              <span className={`text-[8px] font-black uppercase px-2 py-1 rounded-md ${lead.status === 'new' ? 'bg-emerald-500/10 text-emerald-500' : lead.status === 'contacted' ? 'bg-blue-500/10 text-blue-500' : 'bg-neutral-800 text-neutral-400'}`}>
+                                {lead.status}
+                              </span>
+                            </div>
+                            <p className="text-neutral-400 text-xs line-clamp-2 leading-relaxed">{lead.message}</p>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="glass p-12 rounded-[2rem] border-white/5 border-dashed flex flex-col items-center justify-center text-center">
+                          <Filter size={32} className="text-neutral-700 mb-4" />
+                          <p className="text-[10px] font-black uppercase tracking-widest text-neutral-600">No matching signals found</p>
+                          <button onClick={() => { setStatusFilter('all'); setServiceFilter('all'); }} className="mt-4 text-[9px] font-black text-blue-400 uppercase tracking-widest hover:text-white transition-colors">Reset Filters</button>
                         </div>
-                        <p className="text-neutral-400 text-xs line-clamp-2 leading-relaxed">{lead.message}</p>
-                      </div>
-                    ))}
+                      )}
+                    </div>
                   </div>
 
                   <div className="hidden lg:block">
