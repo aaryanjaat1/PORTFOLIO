@@ -141,6 +141,7 @@ const WorkCategory: React.FC = () => {
                 <button
                   key={f}
                   onClick={() => setFilter(f)}
+                  aria-label={`Filter by ${f}`}
                   className={`px-6 md:px-10 py-3 md:py-4 rounded-xl md:rounded-2xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all duration-500 ${
                     filter === f ? 'bg-white text-black shadow-2xl scale-105' : 'glass text-neutral-500 hover:text-white border-white/5'
                   }`}
@@ -160,7 +161,11 @@ const WorkCategory: React.FC = () => {
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: 20 }}
                     onClick={() => handleOpenModal(project)}
-                    className="break-inside-avoid group cursor-pointer"
+                    onKeyDown={(e) => e.key === 'Enter' && handleOpenModal(project)}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`View project: ${project.title}`}
+                    className="break-inside-avoid group cursor-pointer focus:outline-none focus:ring-2 focus:ring-white/20 rounded-[2rem] md:rounded-[3rem]"
                   >
                     <div className={`relative overflow-hidden glass border-white/5 group-hover:border-white/20 transition-all duration-700 rounded-[2rem] md:rounded-[3rem] 
                       ${project.aspectRatio === '9:16' ? 'aspect-[9/16]' : 'aspect-video'}
@@ -186,7 +191,7 @@ const WorkCategory: React.FC = () => {
                         {(category.id === ServiceType.VIDEO_EDITING || project.videoUrl) && (
                           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                              <div className="w-14 h-14 md:w-16 md:h-16 bg-white rounded-full flex items-center justify-center text-black shadow-2xl scale-90 group-hover:scale-100 transition-transform duration-500">
-                                <Play size={20} className="md:size-[24px]" fill="black" />
+                                <Play size={20} className="md:size-[24px]" fill="black" aria-hidden="true" />
                              </div>
                           </div>
                         )}
@@ -224,6 +229,9 @@ const WorkCategory: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Project detail: ${selectedProject.title}`}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-3xl flex items-center justify-center p-4 md:p-12 overflow-y-auto"
           >
@@ -256,6 +264,7 @@ const WorkCategory: React.FC = () => {
                 whileHover={{ scale: 1.1, rotate: 90 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={handleCloseModal}
+                aria-label="Close Project Modal"
                 className="absolute top-6 right-6 z-[110] w-10 h-10 md:w-14 md:h-14 glass rounded-full flex items-center justify-center text-white hover:bg-white hover:text-black transition-colors duration-300"
               >
                 <X size={20} className="md:size-[28px]" />
@@ -277,6 +286,7 @@ const WorkCategory: React.FC = () => {
                       controls 
                       autoPlay 
                       playsInline
+                      aria-label={`Video player for ${selectedProject.title}`}
                       onCanPlayThrough={() => setVideoIsLoading(false)}
                       className={`w-full h-full object-contain transition-opacity duration-700 ${videoIsLoading ? 'opacity-0' : 'opacity-100'}`}
                     />

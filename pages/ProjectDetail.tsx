@@ -19,7 +19,8 @@ const ProjectDetail: React.FC = () => {
       <div className="container mx-auto">
         <button 
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-neutral-400 hover:text-white mb-12 transition-colors"
+          aria-label="Go back to portfolio"
+          className="flex items-center gap-2 text-neutral-400 hover:text-white mb-12 transition-colors focus:outline-none focus:text-white"
         >
           <ArrowLeft size={20} /> Back to Work
         </button>
@@ -47,6 +48,7 @@ const ProjectDetail: React.FC = () => {
                 controls 
                 autoPlay 
                 muted 
+                aria-label={`Case study video for ${project.title}`}
                 className="w-full h-full object-cover"
               />
             ) : (

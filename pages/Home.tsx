@@ -20,36 +20,36 @@ const Home: React.FC = () => {
         
         <div className="container mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center relative z-40">
           
-          {/* Left Content Column - Perfected Typography */}
+          {/* Left Content Column - Perfected Typography Scale */}
           <motion.div 
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1, ease: "easeOut" }}
             className="flex flex-col items-center lg:items-start text-center lg:text-left"
           >
-            <div className="inline-flex items-center gap-3 px-5 py-2 glass rounded-full text-[9px] font-bold tracking-[0.3em] uppercase text-white mb-8 border-white/20">
-              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-              <Sparkles size={12} className="text-yellow-400" /> Shaping the future of digital
+            <div className="inline-flex items-center gap-3 px-4 py-1.5 glass rounded-full text-[9px] font-black uppercase tracking-[0.3em] text-white/80 mb-8 border-white/10">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+              <Sparkles size={11} className="text-yellow-400" /> Shaping the future of digital
             </div>
             
-            <h1 className="text-5xl md:text-7xl xl:text-[7.2rem] font-black mb-8 leading-[0.95] tracking-tighter drop-shadow-2xl">
+            <h1 className="text-4xl md:text-6xl xl:text-[5.5rem] font-black mb-10 leading-[1.05] tracking-tighter drop-shadow-2xl">
               Design <span className="text-gradient-purple">Bold.</span> <br />
               Automate <span className="text-gradient-blue">Smart.</span>
             </h1>
             
-            <p className="text-neutral-400 text-base md:text-xl max-w-lg mb-12 leading-relaxed font-medium opacity-80">
+            <p className="text-neutral-400 text-base md:text-lg max-w-lg mb-12 leading-relaxed font-medium opacity-70">
               Creative Direction meets Engineering. I build scalable digital systems and cinematic brand experiences that dominate markets.
             </p>
             
             <div className="flex flex-col sm:flex-row items-center gap-4 md:gap-6 w-full lg:w-auto relative z-50">
               <Link to="/contact" className="w-full sm:w-auto">
-                <Button size="lg" variant="vibrant" gradientClass="from-white to-neutral-200" className="w-full sm:w-auto !text-black group shadow-[0_20px_50px_rgba(255,255,255,0.1),0_10px_30px_rgba(0,0,0,0.5)] h-14 md:h-16 px-10 border border-white/20">
+                <Button size="lg" variant="vibrant" gradientClass="from-white to-neutral-200" className="w-full sm:w-auto !text-black group shadow-[0_20px_50px_rgba(255,255,255,0.05)] h-14 md:h-16 px-10 border border-white/20">
                   <Calendar className="mr-3" size={18} />
                   Book Call
                 </Button>
               </Link>
               <Link to="/work" className="w-full sm:w-auto">
-                <Button size="lg" variant="outline" className="w-full sm:w-auto backdrop-blur-xl group border-white/20 hover:border-white/40 h-14 md:h-16 px-10 shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
+                <Button size="lg" variant="outline" className="w-full sm:w-auto backdrop-blur-xl group border-white/10 hover:border-white/30 h-14 md:h-16 px-10">
                   View Work
                   <ArrowRight className="ml-3 group-hover:translate-x-1 transition-transform" size={18} />
                 </Button>
