@@ -18,46 +18,46 @@ const Home: React.FC = () => {
         <div className="absolute top-1/4 -left-40 w-[800px] h-[800px] bg-purple-600/10 rounded-full aura-element -z-10 blur-[120px]"></div>
         <div className="absolute bottom-1/4 -right-40 w-[700px] h-[700px] bg-blue-600/10 rounded-full aura-element -z-10 blur-[120px]" style={{ animationDelay: '-5s' }}></div>
         
-        <div className="container mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center relative z-40">
+        <div className="container mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center relative z-40">
           
-          {/* Left Content Column */}
+          {/* Left Content Column - Perfected Typography */}
           <motion.div 
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1, ease: "easeOut" }}
             className="flex flex-col items-center lg:items-start text-center lg:text-left"
           >
-            <div className="inline-flex items-center gap-3 px-5 py-2 glass rounded-full text-[10px] font-bold tracking-[0.3em] uppercase text-white mb-8 border-white/20">
+            <div className="inline-flex items-center gap-3 px-5 py-2 glass rounded-full text-[9px] font-bold tracking-[0.3em] uppercase text-white mb-8 border-white/20">
               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-              <Sparkles size={14} className="text-yellow-400" /> Shaping the future of digital
+              <Sparkles size={12} className="text-yellow-400" /> Shaping the future of digital
             </div>
             
-            <h1 className="text-6xl md:text-[8rem] xl:text-[9.5rem] font-black mb-8 leading-[0.85] tracking-tighter drop-shadow-2xl">
-              Design <span className="text-gradient-purple">Bold</span> <br />
+            <h1 className="text-5xl md:text-7xl xl:text-[7.2rem] font-black mb-8 leading-[0.95] tracking-tighter drop-shadow-2xl">
+              Design <span className="text-gradient-purple">Bold.</span> <br />
               Automate <span className="text-gradient-blue">Smart.</span>
             </h1>
             
-            <p className="text-neutral-300 text-lg md:text-2xl max-w-2xl mb-12 leading-relaxed font-medium">
+            <p className="text-neutral-400 text-base md:text-xl max-w-lg mb-12 leading-relaxed font-medium opacity-80">
               Creative Direction meets Engineering. I build scalable digital systems and cinematic brand experiences that dominate markets.
             </p>
             
             <div className="flex flex-col sm:flex-row items-center gap-4 md:gap-6 w-full lg:w-auto relative z-50">
               <Link to="/contact" className="w-full sm:w-auto">
-                <Button size="lg" variant="vibrant" gradientClass="from-white to-neutral-200" className="w-full sm:w-auto !text-black group shadow-[0_20px_50px_rgba(255,255,255,0.1),0_10px_30px_rgba(0,0,0,0.5)] h-16 md:h-20 px-10 border border-white/20">
-                  <Calendar className="mr-3" size={20} />
-                  Book Discovery Call
+                <Button size="lg" variant="vibrant" gradientClass="from-white to-neutral-200" className="w-full sm:w-auto !text-black group shadow-[0_20px_50px_rgba(255,255,255,0.1),0_10px_30px_rgba(0,0,0,0.5)] h-14 md:h-16 px-10 border border-white/20">
+                  <Calendar className="mr-3" size={18} />
+                  Book Call
                 </Button>
               </Link>
               <Link to="/work" className="w-full sm:w-auto">
-                <Button size="lg" variant="outline" className="w-full sm:w-auto backdrop-blur-xl group border-white/20 hover:border-white/40 h-16 md:h-20 px-10 shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
-                  View Portfolio
-                  <ArrowRight className="ml-3 group-hover:translate-x-1 transition-transform" size={20} />
+                <Button size="lg" variant="outline" className="w-full sm:w-auto backdrop-blur-xl group border-white/20 hover:border-white/40 h-14 md:h-16 px-10 shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
+                  View Work
+                  <ArrowRight className="ml-3 group-hover:translate-x-1 transition-transform" size={18} />
                 </Button>
               </Link>
             </div>
           </motion.div>
 
-          {/* Right Visual Column (Filling Negative Space) */}
+          {/* Right Visual Column (Preserved Exactly as Requested) */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9, x: 40 }}
             animate={{ opacity: 1, scale: 1, x: 0 }}
@@ -112,12 +112,12 @@ const Home: React.FC = () => {
           </motion.div>
         </div>
 
-        {/* Floating Expertise Chips - Positioned in the extreme background sides */}
-        <div className="absolute inset-0 max-w-7xl mx-auto pointer-events-none hidden 2xl:block z-10">
+        {/* Floating Expertise Chips - Positioned far out to avoid any interference */}
+        <div className="absolute inset-0 pointer-events-none hidden 2xl:block z-10">
            <motion.div 
              animate={{ y: [0, -20, 0] }}
              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-             className="absolute top-[15%] left-0 glass p-4 rounded-2xl border-white/10 flex items-center gap-4 opacity-40"
+             className="absolute top-[10%] left-[1%] glass p-4 rounded-2xl border-white/10 flex items-center gap-4 opacity-20"
            >
               <div className="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400"><Video size={18} /></div>
               <div>
@@ -129,7 +129,7 @@ const Home: React.FC = () => {
            <motion.div 
              animate={{ y: [0, 25, 0] }}
              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-             className="absolute bottom-[20%] left-0 glass p-4 rounded-2xl border-white/10 flex items-center gap-4 opacity-40"
+             className="absolute bottom-[10%] left-[3%] glass p-4 rounded-2xl border-white/10 flex items-center gap-4 opacity-20"
            >
               <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400"><Cpu size={18} /></div>
               <div>
