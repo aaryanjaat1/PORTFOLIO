@@ -2,7 +2,8 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, CheckCircle2, Monitor, Tool, Tag } from 'lucide-react';
+// Fixed: replaced non-existent 'Tool' icon with 'Wrench'
+import { ArrowLeft, CheckCircle2, Monitor, Wrench, Tag } from 'lucide-react';
 import { MOCK_PROJECTS } from '../constants';
 import Button from '../components/Button';
 
@@ -110,7 +111,8 @@ const ProjectDetail: React.FC = () => {
 
                 <div>
                   <p className="text-neutral-500 text-xs uppercase font-bold tracking-widest mb-2 flex items-center gap-2">
-                    <Tag size={14} /> Tools Used
+                    {/* Fixed: changed Tag to Wrench to match 'Tools Used' label and consistent iconography */}
+                    <Wrench size={14} /> Tools Used
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {project.tools.map(tool => (

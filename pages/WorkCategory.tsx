@@ -15,6 +15,7 @@ const WorkCategory: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
+  const [videoIsLoading, setVideoIsLoading] = useState(true);
 
   useEffect(() => {
     if (categoryId) {
@@ -51,6 +52,15 @@ const WorkCategory: React.FC = () => {
       setProjects(mappedData);
     }
     setLoading(false);
+  };
+
+  const handleOpenModal = (project: Project) => {
+    setVideoIsLoading(true);
+    setSelectedProject(project);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedProject(null);
   };
 
   if (!category) return <div className="pt-32 text-center text-white">Category not found</div>;
@@ -128,7 +138,7 @@ const WorkCategory: React.FC = () => {
                     initial={{ opacity: 0, scale: 0.95, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                    onClick={() => setSelectedProject(project)}
+                    onClick={() => handleOpenModal(project)}
                     className="break-inside-avoid group cursor-pointer"
                   >
                     <div className={`relative overflow-hidden glass border-white/5 group-hover:border-white/20 transition-all duration-700 rounded-[2rem] md:rounded-[3rem] 
@@ -210,27 +220,36 @@ const WorkCategory: React.FC = () => {
                 ${selectedProject.aspectRatio === '9:16' ? 'max-w-4xl max-h-[90vh]' : 'max-w-7xl'}
               `}
             >
-              {/* Close Button with Haptic-Feel Animation */}
+              {/* Close Button */}
               <motion.button 
                 whileHover={{ scale: 1.1, rotate: 90 }}
                 whileTap={{ scale: 0.9 }}
-                onClick={() => setSelectedProject(null)}
+                onClick={handleCloseModal}
                 className="absolute top-6 right-6 z-[110] w-10 h-10 md:w-14 md:h-14 glass rounded-full flex items-center justify-center text-white hover:bg-white hover:text-black transition-colors duration-300"
               >
                 <X size={20} className="md:size-[28px]" />
               </motion.button>
 
-              {/* Media Section */}
+              {/* Media Section with Lazy Loading Video */}
               <div className={`relative bg-black flex items-center justify-center border-b lg:border-b-0 lg:border-r border-white/5
                 ${selectedProject.aspectRatio === '16:9' ? 'lg:w-2/3 aspect-video' : 'lg:w-1/2 aspect-[9/16] max-h-[60vh] lg:max-h-none'}
               `}>
                 {selectedProject.videoUrl ? (
-                  <video 
-                    src={selectedProject.videoUrl} 
-                    controls 
-                    autoPlay 
-                    className="w-full h-full object-contain"
-                  />
+                  <>
+                    {videoIsLoading && (
+                      <div className="absolute inset-0 z-10 flex items-center justify-center bg-neutral-900/50 backdrop-blur-sm">
+                        <Loader2 className="animate-spin text-white/20" size={48} />
+                      </div>
+                    )}
+                    <video 
+                      src={selectedProject.videoUrl} 
+                      controls 
+                      autoPlay 
+                      playsInline
+                      onCanPlayThrough={() => setVideoIsLoading(false)}
+                      className={`w-full h-full object-contain transition-opacity duration-500 ${videoIsLoading ? 'opacity-0' : 'opacity-100'}`}
+                    />
+                  </>
                 ) : (
                   <img 
                     src={selectedProject.thumbnail} 
@@ -240,7 +259,7 @@ const WorkCategory: React.FC = () => {
                 )}
               </div>
               
-              {/* Content Section with Staggered Entrance */}
+              {/* Content Section */}
               <div className={`p-8 md:p-16 flex flex-col justify-center
                 ${selectedProject.aspectRatio === '16:9' ? 'lg:w-1/3' : 'lg:w-1/2'}
               `}>
@@ -315,12 +334,6 @@ const WorkCategory: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
-
-      <style>{`
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-      `}</style>
     </div>
   );
 };

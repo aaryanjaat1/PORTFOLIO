@@ -53,7 +53,8 @@ const AIAutomation: React.FC = () => {
                 className="relative z-10 flex flex-col items-center group"
               >
                 <div className="w-24 h-24 rounded-3xl glass border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-8 bg-neutral-900 shadow-2xl group-hover:scale-110 group-hover:border-emerald-500 transition-all duration-500">
-                  {React.cloneElement(step.icon as React.ReactElement, { size: 32 })}
+                  {/* Fixed: Added cast to React.ReactElement<any> to resolve 'size' prop type error */}
+                  {React.cloneElement(step.icon as React.ReactElement<any>, { size: 32 })}
                 </div>
                 <h3 className="text-2xl font-black mb-2 uppercase tracking-tight">{step.label}</h3>
                 <p className="text-neutral-500 text-sm font-medium">{step.sub}</p>
@@ -71,7 +72,8 @@ const AIAutomation: React.FC = () => {
             >
               <div className={`absolute -top-10 -right-10 w-40 h-40 bg-${flow.color}-500/10 rounded-full blur-3xl`}></div>
               <div className={`w-16 h-16 bg-neutral-900 border border-white/10 rounded-2xl flex items-center justify-center text-${flow.color}-400 mb-10 group-hover:scale-110 transition-transform`}>
-                {React.cloneElement(flow.icon as React.ReactElement, { size: 28 })}
+                {/* Fixed: Added cast to React.ReactElement<any> to resolve 'size' prop type error */}
+                {React.cloneElement(flow.icon as React.ReactElement<any>, { size: 28 })}
               </div>
               <h3 className="text-3xl font-black mb-6 uppercase tracking-tighter">{flow.title}</h3>
               <p className="text-neutral-400 text-lg leading-relaxed mb-10 font-medium">{flow.desc}</p>

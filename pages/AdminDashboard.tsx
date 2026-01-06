@@ -6,7 +6,7 @@ import {
   AreaChart, Area, ResponsiveContainer, CartesianGrid
 } from 'recharts';
 import { 
-  FolderKanban, Users, Plus, Edit2, Trash2, Activity, LogOut, X, Video, MessageSquare, Mail, CheckCircle, Clock, Monitor, Smartphone, RefreshCw, Loader2
+  FolderKanban, Users, Plus, Edit2, Trash2, Activity, LogOut, X, Video, MessageSquare, Mail, CheckCircle, Clock, Monitor, Smartphone, RefreshCw, Loader2, Tag, Wrench
 } from 'lucide-react';
 import Button from '../components/Button';
 import { CATEGORIES } from '../constants';
@@ -25,6 +25,20 @@ const AdminDashboard: React.FC = () => {
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [loading, setLoading] = useState(true);
   const [isDetecting, setIsDetecting] = useState(false);
+
+  // Form state uses strings for tags/tools to make editing easy for the user
+  const [formData, setFormData] = useState({
+    title: '', 
+    client: '', 
+    category: ServiceType.VIDEO_EDITING, 
+    description: '', 
+    metrics: '', 
+    aspectRatio: '16:9' as AspectRatio, 
+    toolsRaw: '', 
+    tagsRaw: '', 
+    thumbnail: '', 
+    videoUrl: ''
+  });
 
   useEffect(() => {
     const token = localStorage.getItem('admin_token');
@@ -66,11 +80,21 @@ const AdminDashboard: React.FC = () => {
     navigate('/login');
   };
 
-  const [formData, setFormData] = useState<Partial<Project>>({
-    title: '', client: '', category: ServiceType.VIDEO_EDITING, description: '', 
-    metrics: '', aspectRatio: '16:9', tools: [], tags: [], 
-    thumbnail: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe', videoUrl: ''
-  });
+  const resetForm = () => {
+    setEditingId(null);
+    setFormData({
+      title: '', 
+      client: '', 
+      category: ServiceType.VIDEO_EDITING, 
+      description: '', 
+      metrics: '', 
+      aspectRatio: '16:9', 
+      toolsRaw: '', 
+      tagsRaw: '', 
+      thumbnail: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe', 
+      videoUrl: ''
+    });
+  };
 
   const detectAspectRatio = () => {
     if (!formData.videoUrl) return;
@@ -91,6 +115,11 @@ const AdminDashboard: React.FC = () => {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Parse raw strings into arrays
+    const tools = formData.toolsRaw.split(',').map(s => s.trim()).filter(Boolean);
+    const tags = formData.tagsRaw.split(',').map(s => s.trim()).filter(Boolean);
+
     const payload = {
       title: formData.title,
       client: formData.client,
@@ -100,16 +129,26 @@ const AdminDashboard: React.FC = () => {
       aspect_ratio: formData.aspectRatio,
       description: formData.description,
       metrics: formData.metrics,
-      tools: formData.tools || [],
-      tags: formData.tags || []
+      tools: tools,
+      tags: tags
     };
 
     if (editingId) {
       const { error } = await supabase.from('projects').update(payload).eq('id', editingId);
-      if (!error) fetchData();
+      if (error) {
+        console.error('Update error:', error);
+        alert('Failed to update project.');
+      } else {
+        fetchData();
+      }
     } else {
       const { error } = await supabase.from('projects').insert([payload]);
-      if (!error) fetchData();
+      if (error) {
+        console.error('Insert error:', error);
+        alert('Failed to create project.');
+      } else {
+        fetchData();
+      }
     }
     setIsModalOpen(false);
   };
@@ -127,6 +166,23 @@ const AdminDashboard: React.FC = () => {
     if (selectedLead?.id === id) setSelectedLead(prev => prev ? { ...prev, status } : null);
   };
 
+  const openEditModal = (p: Project) => {
+    setEditingId(p.id);
+    setFormData({
+      title: p.title || '',
+      client: p.client || '',
+      category: p.category || ServiceType.VIDEO_EDITING,
+      description: p.description || '',
+      metrics: p.metrics || '',
+      aspectRatio: p.aspectRatio || '16:9',
+      toolsRaw: (p.tools || []).join(', '),
+      tagsRaw: (p.tags || []).join(', '),
+      thumbnail: p.thumbnail || '',
+      videoUrl: (p as any).video_url || p.videoUrl || ''
+    });
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="min-h-screen pt-24 md:pt-32 pb-20 bg-[#020202] text-neutral-100">
       <div className="container mx-auto px-4 md:px-6">
@@ -140,7 +196,7 @@ const AdminDashboard: React.FC = () => {
            </div>
            <div className="flex gap-3 w-full md:w-auto">
               <Link to="/" className="flex-1 md:flex-none"><Button variant="outline" size="sm" className="w-full bg-transparent border-white/10">Public View</Button></Link>
-              <Button onClick={() => { setEditingId(null); setIsModalOpen(true); setFormData({ title: '', client: '', category: ServiceType.VIDEO_EDITING, description: '', metrics: '', aspectRatio: '16:9', tools: [], tags: [], thumbnail: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe', videoUrl: '' }); }} variant="vibrant" size="sm" gradientClass="from-blue-600 to-indigo-600" className="flex-1 md:flex-none gap-2">
+              <Button onClick={() => { resetForm(); setIsModalOpen(true); }} variant="vibrant" size="sm" gradientClass="from-blue-600 to-indigo-600" className="flex-1 md:flex-none gap-2">
                  <Plus size={18} /> New Project
               </Button>
            </div>
@@ -228,14 +284,7 @@ const AdminDashboard: React.FC = () => {
                           <td className="px-6 py-6 hidden md:table-cell text-[10px] font-mono text-neutral-500">{p.aspectRatio}</td>
                           <td className="px-6 py-6 text-right">
                             <div className="flex justify-end gap-2">
-                              <button onClick={() => { 
-                                setFormData({
-                                  ...p,
-                                  videoUrl: (p as any).video_url || p.videoUrl
-                                }); 
-                                setEditingId(p.id); 
-                                setIsModalOpen(true); 
-                              }} className="p-2 glass rounded-lg text-blue-400"><Edit2 size={14}/></button>
+                              <button onClick={() => openEditModal(p)} className="p-2 glass rounded-lg text-blue-400"><Edit2 size={14}/></button>
                               <button onClick={() => deleteProject(p.id)} className="p-2 glass rounded-lg text-red-500"><Trash2 size={14}/></button>
                             </div>
                           </td>
@@ -330,10 +379,10 @@ const AdminDashboard: React.FC = () => {
       <AnimatePresence>
         {isModalOpen && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/95 backdrop-blur-xl">
-            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="w-full max-w-5xl glass p-8 md:p-12 rounded-[2rem] md:rounded-[4rem] border border-white/5 grid grid-cols-1 lg:grid-cols-2 gap-10 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="w-full max-w-6xl glass p-8 md:p-12 rounded-[2rem] md:rounded-[4rem] border border-white/5 grid grid-cols-1 lg:grid-cols-2 gap-10 max-h-[95vh] overflow-y-auto custom-scrollbar">
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-2xl font-black uppercase tracking-tighter">Live Preview</h3>
+                    <h3 className="text-2xl font-black uppercase tracking-tighter">Asset Preview</h3>
                     <div className="flex gap-2">
                        <div className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border transition-colors ${formData.aspectRatio === '16:9' ? 'bg-blue-500 text-white border-blue-400' : 'bg-neutral-800 text-neutral-500 border-white/5'}`}>16:9</div>
                        <div className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border transition-colors ${formData.aspectRatio === '9:16' ? 'bg-purple-500 text-white border-purple-400' : 'bg-neutral-800 text-neutral-500 border-white/5'}`}>9:16</div>
@@ -374,14 +423,18 @@ const AdminDashboard: React.FC = () => {
                         <input className="w-full bg-neutral-800 p-4 rounded-xl border border-white/5 outline-none font-bold text-sm focus:border-white/20 transition-all" placeholder="Client Name" value={formData.client} onChange={e => setFormData({...formData, client: e.target.value})} />
                       </div>
                     </div>
-                    <div className="space-y-1.5">
-                      <label className="text-[9px] font-black text-neutral-500 uppercase tracking-widest ml-1">Stream Source (URL)</label>
-                      <input className="w-full bg-neutral-800 p-4 rounded-xl border border-white/5 outline-none font-mono text-xs focus:border-white/20 transition-all" placeholder="https://..." value={formData.videoUrl} onChange={e => setFormData({...formData, videoUrl: e.target.value})} />
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <label className="text-[9px] font-black text-neutral-500 uppercase tracking-widest ml-1">Stream Source (URL)</label>
+                        <input className="w-full bg-neutral-800 p-4 rounded-xl border border-white/5 outline-none font-mono text-xs focus:border-white/20 transition-all" placeholder="https://..." value={formData.videoUrl} onChange={e => setFormData({...formData, videoUrl: e.target.value})} />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-[9px] font-black text-neutral-500 uppercase tracking-widest ml-1">Thumbnail (URL)</label>
+                        <input className="w-full bg-neutral-800 p-4 rounded-xl border border-white/5 outline-none font-mono text-xs focus:border-white/20 transition-all" placeholder="https://..." value={formData.thumbnail} onChange={e => setFormData({...formData, thumbnail: e.target.value})} />
+                      </div>
                     </div>
-                    <div className="space-y-1.5">
-                      <label className="text-[9px] font-black text-neutral-500 uppercase tracking-widest ml-1">Thumbnail (URL)</label>
-                      <input className="w-full bg-neutral-800 p-4 rounded-xl border border-white/5 outline-none font-mono text-xs focus:border-white/20 transition-all" placeholder="https://..." value={formData.thumbnail} onChange={e => setFormData({...formData, thumbnail: e.target.value})} />
-                    </div>
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-1.5">
                         <label className="text-[9px] font-black text-neutral-500 uppercase tracking-widest ml-1">Discipline</label>
@@ -401,9 +454,26 @@ const AdminDashboard: React.FC = () => {
                         </div>
                       </div>
                     </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <label className="text-[9px] font-black text-neutral-500 uppercase tracking-widest ml-1 flex items-center gap-2"><Tag size={10}/> Tags (comma separated)</label>
+                        <input className="w-full bg-neutral-800 p-4 rounded-xl border border-white/5 outline-none font-medium text-sm focus:border-white/20 transition-all" placeholder="Reels, Cinema, Viral..." value={formData.tagsRaw} onChange={e => setFormData({...formData, tagsRaw: e.target.value})} />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-[9px] font-black text-neutral-500 uppercase tracking-widest ml-1 flex items-center gap-2"><Wrench size={10}/> Tools (comma separated)</label>
+                        <input className="w-full bg-neutral-800 p-4 rounded-xl border border-white/5 outline-none font-medium text-sm focus:border-white/20 transition-all" placeholder="Davinci, After Effects..." value={formData.toolsRaw} onChange={e => setFormData({...formData, toolsRaw: e.target.value})} />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-[9px] font-black text-neutral-500 uppercase tracking-widest ml-1">Performance Metric</label>
+                      <input className="w-full bg-neutral-800 p-4 rounded-xl border border-white/5 outline-none font-bold text-sm focus:border-white/20 transition-all" placeholder="e.g. 5M+ Views / 40% Growth" value={formData.metrics} onChange={e => setFormData({...formData, metrics: e.target.value})} />
+                    </div>
+
                     <div className="space-y-1.5">
                       <label className="text-[9px] font-black text-neutral-500 uppercase tracking-widest ml-1">Narrative</label>
-                      <textarea className="w-full bg-neutral-800 p-4 rounded-xl border border-white/5 min-h-[80px] font-medium resize-none text-sm focus:border-white/20 transition-all" placeholder="Project brief..." value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} />
+                      <textarea className="w-full bg-neutral-800 p-4 rounded-xl border border-white/5 min-h-[100px] font-medium resize-none text-sm focus:border-white/20 transition-all" placeholder="Project brief and case study details..." value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} />
                     </div>
                     <Button type="submit" variant="vibrant" className="w-full py-5 rounded-2xl uppercase tracking-[0.2em] text-[10px]" gradientClass="from-emerald-600 to-teal-500">Deploy Changes</Button>
                   </form>
