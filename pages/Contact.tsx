@@ -1,9 +1,10 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Send, Mail, MapPin, Phone } from 'lucide-react';
+import { Send, Mail, MapPin, Loader2 } from 'lucide-react';
 import Button from '../components/Button';
 import { CATEGORIES } from '../constants';
+import { supabase } from '../supabase';
 
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -12,13 +13,32 @@ const Contact: React.FC = () => {
     service: '',
     message: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, this would hit the backend
-    console.log('Lead captured:', formData);
-    setSubmitted(true);
+    setIsSubmitting(true);
+    
+    const { error } = await supabase
+      .from('leads')
+      .insert([
+        { 
+          name: formData.name, 
+          email: formData.email, 
+          service: formData.service, 
+          message: formData.message,
+          status: 'new'
+        }
+      ]);
+
+    if (error) {
+      console.error('Error submitting lead:', error);
+      alert('Failed to send message. Please try again.');
+    } else {
+      setSubmitted(true);
+    }
+    setIsSubmitting(false);
   };
 
   return (
@@ -109,7 +129,9 @@ const Contact: React.FC = () => {
                     onChange={e => setFormData({...formData, message: e.target.value})}
                   />
                 </div>
-                <Button className="w-full" size="lg" type="submit">Send Message</Button>
+                <Button className="w-full" size="lg" type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? <Loader2 className="animate-spin" /> : 'Send Message'}
+                </Button>
               </form>
             )}
           </div>
