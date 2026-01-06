@@ -45,9 +45,6 @@ const Navbar: React.FC = () => {
                 {link.name}
               </Link>
             ))}
-            <Link to="/admin">
-              <Button size="sm" variant="outline" className="text-[10px] uppercase tracking-widest px-4 py-2 border-white/10">Admin</Button>
-            </Link>
           </div>
 
           {/* Mobile Toggle */}

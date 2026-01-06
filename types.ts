@@ -6,21 +6,23 @@ export enum ServiceType {
   WEB_DESIGN = 'web-design'
 }
 
+export type AspectRatio = '16:9' | '9:16';
+
 export interface Project {
   id: string;
   title: string;
   client: string;
   category: ServiceType;
   thumbnail: string;
-  videoUrl?: string; // Main showcase video
-  processVideoUrl?: string; // "How it works" video
+  videoUrl?: string;
+  aspectRatio: AspectRatio;
   description: string;
   problem?: string;
   solution?: string;
   result?: string;
   tools: string[];
   tags: string[];
-  metrics?: string; // e.g., "300% Growth" or "20h/week saved"
+  metrics?: string;
   createdAt: string;
   views: number;
 }
