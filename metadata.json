@@ -1,0 +1,8 @@
+{
+  "name": "Aryan - Creative Technologist Agency",
+  "description": "A premium personal brand and agency-style platform for a creative technologist specializing in video editing, design, automation, and web development.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
